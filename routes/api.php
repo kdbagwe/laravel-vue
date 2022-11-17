@@ -28,17 +28,18 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::post('/logout', [UserController::class, 'logout']);
 
-    Route::get('/accounts', [AccountController::class, 'index']);
+    Route::group(['middleware' => 'is-customer'], function () {
 
-    Route::post('/accounts', [AccountController::class, 'store']);
+        Route::get('/accounts', [AccountController::class, 'index']);
 
-    Route::get('/users', [UserController::class, 'index']);
+        Route::post('/accounts', [AccountController::class, 'store']);
+    });
 
-    Route::get('/users/{user}/accounts', [UserController::class, 'userAccounts']);
+    // allow if banker
+    Route::group(['middleware' => 'is-banker'], function () {
 
+        Route::get('/users', [UserController::class, 'index']);
 
-    // allow if user is verified by admin
-    Route::group(['middleware' => 'user-is-verified'], function () {
-
+        Route::get('/users/{user}/accounts', [UserController::class, 'userAccounts']);
     });
 });
